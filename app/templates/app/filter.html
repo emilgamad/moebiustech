@@ -1,0 +1,6 @@
+<ul>
+{% for q in questions %}
+    <li><a href="{% url 'question' q.id %}">{{ q.question_text }}</a></li>
+{% endfor %}
+</ul>
+
