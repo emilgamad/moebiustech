@@ -20,7 +20,46 @@ class Product(models.Model):
         else:
             last_position = Product.objects.last().position
         self.position = last_position + 1
-        super().save(*args, **kwargs)    
+        super().save(*args, **kwargs)
+    
+class Question(models.Model):
+    product = models.ForeignKey(Product, on_delete=models.SET_NULL,null=True)
+    question_text = models.CharField(max_length=200)
+    create_date = models.DateTimeField(auto_now_add=True)
+    is_active = models.BooleanField(default=False)
+    position = models.IntegerField(default=0)
+
+    class Meta:
+        ordering = ['product']
+
+    def __str__(self):
+        return "{} - {}".format(self.product, self.question_text)
+
+    def save(self, *args, **kwargs):
+        if Question.objects.last() is None:
+            last_position = 0
+        else:
+            last_position = Question.objects.last().position
+        self.position = last_position + 1
+        super().save(*args, **kwargs)  
+    
+class Choice(models.Model):
+    question = models.ManyToManyField(Question)
+    choice_text = models.CharField(max_length=200)
+    create_date = models.DateTimeField(auto_now_add=True)
+    is_active = models.BooleanField(default=False)
+    position = models.IntegerField(default=0)
+
+    def __str__(self):
+        return "{}".format(self.choice_text)
+
+    def save(self, *args, **kwargs):
+        if Choice.objects.last() is None:
+            last_position = 0
+        else:
+            last_position = Choice.objects.last().position
+        self.position = last_position + 1
+        super().save(*args, **kwargs)  
 
 class Variant(models.Model):
     product = models.ForeignKey(Product, on_delete=models.SET_NULL,null=True)
@@ -57,37 +96,6 @@ class Reviews(models.Model):
     product = models.ForeignKey(Product, on_delete=models.SET_NULL,null=True)
     comment = models.TextField()
     rating = models.IntegerField(default=0)
-
-class Question(models.Model):
-    product = models.ForeignKey(Product, on_delete=models.SET_NULL,null=True)
-    question_text = models.CharField(max_length=200)
-    create_date = models.DateTimeField(auto_now_add=True)
-    is_active = models.BooleanField(default=False)
-    position = models.IntegerField(default=0)
-
-    class Meta:
-        ordering = ['product']
-
-    def __str__(self):
-        return "{} - {}".format(self.product, self.question_text)
-
-    def save(self, *args, **kwargs):
-        if Product.objects.last() is None:
-            last_position = 0
-        else:
-            last_position = Product.objects.last().position
-        self.position = last_position + 1
-        super().save(*args, **kwargs)  
-    
-
-class Choice(models.Model):
-    question = models.ManyToManyField(Question)
-    choice_text = models.CharField(max_length=200)
-    create_date = models.DateTimeField(auto_now_add=True)
-
-    def __str__(self):
-        return "{}".format(self.choice_text)
-
 
 class Searche(models.Model):
     zip_code = models.CharField(max_length=200)

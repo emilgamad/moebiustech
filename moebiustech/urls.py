@@ -11,6 +11,7 @@ router.register('choices', views.Choice)
 router.register('searches', views.Searche)
 router.register('clients', views.Client)
 router.register('contractors', views.Contractor)
+#router.register('productdetails', views.ProductDetails)
 
 urlpatterns = [
     path('app/', include('app.urls')),

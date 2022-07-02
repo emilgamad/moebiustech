@@ -8,21 +8,30 @@ class ProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
         fields = [
-            'name','is_active','position'
+            'id',
+            'name',
+            'is_active',
+            'position',
             ]
 
 class QuestionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Question
         fields = [
+            'id',
             'product',
             'question_text',
+            'position',
+            'is_active'
             ]
 
 class ChoiceSerializer(serializers.ModelSerializer):
     class Meta:
         model = Choice
         fields = [
+            'id',
+            'is_active',
+            'position',
             'question',
             'choice_text'
             ]
@@ -63,3 +72,4 @@ class ContractorSerializer(serializers.ModelSerializer):
             'product',
             'pub_date',
             ]
+
