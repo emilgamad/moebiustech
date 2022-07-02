@@ -8,9 +8,19 @@ class Product(models.Model):
     create_date = models.DateTimeField(auto_now_add=True)
     price = models.DecimalField(max_digits=6, decimal_places=2, default=0) #conversion of different currencies?
     price_with_vat = models.DecimalField(max_digits=6, decimal_places=2, default=0)
+    is_active = models.BooleanField(default=False)
+    position = models.IntegerField(default=0)
 
     def __str__(self):
         return self.name
+
+    def save(self, *args, **kwargs):
+        if Product.objects.last() is None:
+            last_position = 0
+        else:
+            last_position = Product.objects.last().position
+        self.position = last_position + 1
+        super().save(*args, **kwargs)    
 
 class Variant(models.Model):
     product = models.ForeignKey(Product, on_delete=models.SET_NULL,null=True)
@@ -52,12 +62,22 @@ class Question(models.Model):
     product = models.ForeignKey(Product, on_delete=models.SET_NULL,null=True)
     question_text = models.CharField(max_length=200)
     create_date = models.DateTimeField(auto_now_add=True)
+    is_active = models.BooleanField(default=False)
+    position = models.IntegerField(default=0)
 
     class Meta:
         ordering = ['product']
 
     def __str__(self):
         return "{} - {}".format(self.product, self.question_text)
+
+    def save(self, *args, **kwargs):
+        if Product.objects.last() is None:
+            last_position = 0
+        else:
+            last_position = Product.objects.last().position
+        self.position = last_position + 1
+        super().save(*args, **kwargs)  
     
 
 class Choice(models.Model):

@@ -8,7 +8,7 @@ class ProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
         fields = [
-            'name'
+            'name','is_active','position'
             ]
 
 class QuestionSerializer(serializers.ModelSerializer):
