@@ -1,4 +1,4 @@
-env/
+rkta_env/*
 
 # Elastic Beanstalk Files
 .elasticbeanstalk/*
