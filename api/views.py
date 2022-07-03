@@ -20,10 +20,15 @@ class Choice(viewsets.ModelViewSet):
     serializer_class = ChoiceSerializer
     filterset_fields = ['question']
 
+
+#Check POST create search record
+#Create Matches
+#Return Match 
 class Searche(viewsets.ModelViewSet):
     queryset = Searche.objects.all()
     serializer_class = SearcheSerializer
 
+#Data Entry
 class Contractor(viewsets.ModelViewSet):
     queryset = Contractor.objects.all()
     serializer_class = ContractorSerializer
