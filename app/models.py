@@ -5,7 +5,7 @@ from django.template.defaultfilters import slugify
 
 class Product(models.Model):
     position = models.IntegerField(default=0)
-    service = models.SlugField(max_length=200)
+    service_slug = models.SlugField(max_length=200)
     service_label = models.CharField(max_length=200)
     is_active = models.BooleanField(default=False)
     #--------------------------#
@@ -40,7 +40,7 @@ class Question(models.Model):
     position = models.IntegerField(default=0)
     question_type = models.CharField(max_length=20, choices=QUESTION_TYPE)
     question_label = models.CharField(max_length=200)
-    name = models.SlugField(max_length=200)
+    question_slug = models.SlugField(max_length=200)
     is_required = models.BooleanField(default=False)
     is_multiple= models.BooleanField(default=False)
     #--------------------------#
@@ -85,12 +85,13 @@ class Choice(models.Model):
         self.position = last_position + 1
         super().save(*args, **kwargs)  
 
-class QuestionChoices(models.Model):
+class Service(models.Model):
+    product = models.ForeignKey(Product,on_delete=models.SET_NULL,null=True)
     question = models.ForeignKey(Question,on_delete=models.SET_NULL,null=True)
     choices = models.ManyToManyField(Choice)
 
     def __str__(self):
-        return "{} - Choices".format(self.question)
+        return "{}".format(self.product)
 
 
 class Variant(models.Model):

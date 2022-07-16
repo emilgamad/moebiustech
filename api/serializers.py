@@ -1,7 +1,9 @@
 from rest_framework import serializers
 
-from app.models import Product, Question, Choice, Searche, QuestionChoices
+from app.models import Product, Question, Choice, Searche, Service
 from users.models import Contractor, Client
+
+
 
 
 class ProductSerializer(serializers.ModelSerializer):
@@ -9,40 +11,45 @@ class ProductSerializer(serializers.ModelSerializer):
         model = Product
         fields = [
             'id',
-            'name',
-            'is_active',
             'position',
+            'service_slug',
+            'service_label',
+            'is_active',
             ]
 
+
 class QuestionSerializer(serializers.ModelSerializer):
+    #product = serializers.CharField(source='product.service_label')
     class Meta:
         model = Question
         fields = [
+            #'product',
             'id',
-            'product',
-            'question_text',
             'position',
-            'is_active'
+            'question_type',
+            'question_label',
+            'question_slug',
+            'is_required',
+            'is_multiple',
             ]
+
 
 class ChoiceSerializer(serializers.ModelSerializer):
     class Meta:
         model = Choice
         fields = [
             'id',
-            'is_active',
-            'position',
-            'question',
-            'choice_text'
+            'label',
+            'value'
             ]
 
-class QuestionChoicesSerializer(serializers.ModelSerializer):
+class ServiceSerializer(serializers.ModelSerializer):
     class Meta:
-        model = QuestionChoices
+        model = Service
         fields = [
-            'id',
-            'value',
-            'label',
+            'product',
+            'question',
+            'choices'
             ]
 
 class SearcheSerializer(serializers.ModelSerializer):

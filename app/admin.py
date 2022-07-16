@@ -1,9 +1,9 @@
 from django.contrib import admin
 
-from .models import Product,Question,Choice,Searche,QuestionChoices
+from .models import Product,Question,Choice,Searche,Service
 
 admin.site.register(Product)
 admin.site.register(Question)
 admin.site.register(Choice)
-admin.site.register(QuestionChoices)
+admin.site.register(Service)
 #admin.site.register(Searche)
