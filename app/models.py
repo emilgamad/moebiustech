@@ -15,7 +15,7 @@ class Product(models.Model):
     
     
     def __str__(self):
-        return self.service_label
+        return f'{self.service_label} - {self.id}'
 
     def save(self, *args, **kwargs):
         if Product.objects.last() is None:
