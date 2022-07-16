@@ -1,18 +1,21 @@
 from django.db import models
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
-
+from django.template.defaultfilters import slugify
 
 class Product(models.Model):
-    name = models.CharField(max_length=200)
+    position = models.IntegerField(default=0)
+    service = models.SlugField(max_length=200)
+    service_label = models.CharField(max_length=200)
+    is_active = models.BooleanField(default=False)
+    #--------------------------#
     create_date = models.DateTimeField(auto_now_add=True)
     price = models.DecimalField(max_digits=6, decimal_places=2, default=0) #conversion of different currencies?
     price_with_vat = models.DecimalField(max_digits=6, decimal_places=2, default=0)
-    is_active = models.BooleanField(default=False)
-    position = models.IntegerField(default=0)
-
+    
+    
     def __str__(self):
-        return self.name
+        return self.service_label
 
     def save(self, *args, **kwargs):
         if Product.objects.last() is None:
@@ -20,20 +23,36 @@ class Product(models.Model):
         else:
             last_position = Product.objects.last().position
         self.position = last_position + 1
+        self.service = slugify(self.service_label)
         super().save(*args, **kwargs)
-    
+
+
+
 class Question(models.Model):
+    QUESTION_TYPE = [
+        ("RadioQuestion","Radio Question"),
+        ("CheckboxQuestion", "Checkbox Question"),
+        ("DropdownQuestion", "Dropdown Question")
+
+    ]
+
     product = models.ForeignKey(Product, on_delete=models.SET_NULL,null=True)
-    question_text = models.CharField(max_length=200)
+    position = models.IntegerField(default=0)
+    question_type = models.CharField(max_length=20, choices=QUESTION_TYPE)
+    question_label = models.CharField(max_length=200)
+    name = models.SlugField(max_length=200)
+    is_required = models.BooleanField(default=False)
+    is_multiple= models.BooleanField(default=False)
+    #--------------------------#
     create_date = models.DateTimeField(auto_now_add=True)
     is_active = models.BooleanField(default=False)
-    position = models.IntegerField(default=0)
+    
 
     class Meta:
         ordering = ['product']
 
     def __str__(self):
-        return "{} - {}".format(self.product, self.question_text)
+        return "{} - {}".format(self.product, self.question_label)
 
     def save(self, *args, **kwargs):
         if Question.objects.last() is None:
@@ -41,17 +60,22 @@ class Question(models.Model):
         else:
             last_position = Question.objects.last().position
         self.position = last_position + 1
+        self.name = slugify(self.question_label)
         super().save(*args, **kwargs)  
-    
+
+
+
 class Choice(models.Model):
     question = models.ManyToManyField(Question)
-    choice_text = models.CharField(max_length=200)
+    position = models.IntegerField(default=0)
+    value = models.CharField(max_length=200)
+    label = models.CharField(max_length=200)
     create_date = models.DateTimeField(auto_now_add=True)
     is_active = models.BooleanField(default=False)
-    position = models.IntegerField(default=0)
+    
 
     def __str__(self):
-        return "{}".format(self.choice_text)
+        return "{}".format(self.label)
 
     def save(self, *args, **kwargs):
         if Choice.objects.last() is None:
@@ -60,6 +84,14 @@ class Choice(models.Model):
             last_position = Choice.objects.last().position
         self.position = last_position + 1
         super().save(*args, **kwargs)  
+
+class QuestionChoices(models.Model):
+    question = models.ForeignKey(Question,on_delete=models.SET_NULL,null=True)
+    choices = models.ManyToManyField(Choice)
+
+    def __str__(self):
+        return "{} - Choices".format(self.question)
+
 
 class Variant(models.Model):
     product = models.ForeignKey(Product, on_delete=models.SET_NULL,null=True)

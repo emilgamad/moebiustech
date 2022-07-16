@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from app.models import Product, Question, Choice, Searche
+from app.models import Product, Question, Choice, Searche, QuestionChoices
 from users.models import Contractor, Client
 
 
@@ -34,6 +34,15 @@ class ChoiceSerializer(serializers.ModelSerializer):
             'position',
             'question',
             'choice_text'
+            ]
+
+class QuestionChoicesSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = QuestionChoices
+        fields = [
+            'id',
+            'value',
+            'label',
             ]
 
 class SearcheSerializer(serializers.ModelSerializer):

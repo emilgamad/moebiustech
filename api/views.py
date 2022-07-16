@@ -1,7 +1,8 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from app.models import Product, Question, Choice, Searche
+from app.models import Product, Question, Choice, Searche, QuestionChoices
 from users.models import Contractor, Client
-from .serializers import ProductSerializer, QuestionSerializer, ChoiceSerializer, SearcheSerializer, ClientSerializer, ContractorSerializer#, ProductQuestionSerializer
+from .serializers import ProductSerializer, QuestionSerializer, ChoiceSerializer, \
+    SearcheSerializer, ClientSerializer, ContractorSerializer, QuestionChoicesSerializer
 from rest_framework import viewsets, generics
 from rest_framework.response import Response
 
@@ -20,6 +21,10 @@ class Choice(viewsets.ModelViewSet):
     serializer_class = ChoiceSerializer
     filterset_fields = ['question']
 
+class QuestionChoices(viewsets.ModelViewSet):
+    queryset = QuestionChoices.objects.all()
+    serializer_class = QuestionChoicesSerializer
+
 
 #Check POST create search record
 #Create Matches
@@ -37,9 +42,7 @@ class Client(viewsets.ModelViewSet):
     queryset = Client.objects.all()
     serializer_class = ClientSerializer
 
-#class ProductDetails(generics.ListAPIView):
-    #queryset = Question.objects.all()
-    #serializer_class = QuestionSerializer
+
     
 
 
