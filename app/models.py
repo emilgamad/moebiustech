@@ -74,11 +74,6 @@ class Question(models.Model):
         return "{} - {}".format(self.product, self.question_label)
 
     def save(self, *args, **kwargs):
-        if Question.objects.last() is None:
-            last_position = 0
-        else:
-            last_position = Question.objects.last().position
-        self.position = last_position + 1
         self.question_slug = slugify(self.question_label)
         super().save(*args, **kwargs) 
 
