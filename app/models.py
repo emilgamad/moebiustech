@@ -3,6 +3,7 @@ from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 from django.template.defaultfilters import slugify
 
+
 class Product(models.Model):
     position = models.IntegerField(default=0)
     service_slug = models.SlugField(max_length=200)
@@ -23,9 +24,27 @@ class Product(models.Model):
         else:
             last_position = Product.objects.last().position
         self.position = last_position + 1
-        self.service = slugify(self.service_label)
+        self.service_slug = slugify(self.service_label)
         super().save(*args, **kwargs)
 
+
+class Choice(models.Model):
+    position = models.IntegerField(default=0)
+    value = models.CharField(max_length=200)
+    label = models.CharField(max_length=200)
+    create_date = models.DateTimeField(auto_now_add=True)
+    is_active = models.BooleanField(default=False)
+
+    def __str__(self):
+        return "{}".format(self.label)
+
+    def save(self, *args, **kwargs):
+        if Choice.objects.last() is None:
+            last_position = 0
+        else:
+            last_position = Choice.objects.last().position
+        self.position = last_position + 1
+        super().save(*args, **kwargs)  
 
 
 class Question(models.Model):
@@ -35,14 +54,14 @@ class Question(models.Model):
         ("DropdownQuestion", "Dropdown Question")
 
     ]
-
-    product = models.ForeignKey(Product, on_delete=models.SET_NULL,null=True)
     position = models.IntegerField(default=0)
     question_type = models.CharField(max_length=20, choices=QUESTION_TYPE)
     question_label = models.CharField(max_length=200)
     question_slug = models.SlugField(max_length=200)
     is_required = models.BooleanField(default=False)
     is_multiple= models.BooleanField(default=False)
+    product = models.ForeignKey(Product,on_delete=models.SET_NULL,null=True)
+    choices = models.ManyToManyField(Choice,blank=True)
     #--------------------------#
     create_date = models.DateTimeField(auto_now_add=True)
     is_active = models.BooleanField(default=False)
@@ -60,35 +79,28 @@ class Question(models.Model):
         else:
             last_position = Question.objects.last().position
         self.position = last_position + 1
-        self.name = slugify(self.question_label)
-        super().save(*args, **kwargs)  
+        self.question_slug = slugify(self.question_label)
+        super().save(*args, **kwargs) 
 
 
 
-class Choice(models.Model):
-    question = models.ManyToManyField(Question)
-    position = models.IntegerField(default=0)
-    value = models.CharField(max_length=200)
-    label = models.CharField(max_length=200)
-    create_date = models.DateTimeField(auto_now_add=True)
-    is_active = models.BooleanField(default=False)
-    
 
-    def __str__(self):
-        return "{}".format(self.label)
 
-    def save(self, *args, **kwargs):
-        if Choice.objects.last() is None:
-            last_position = 0
-        else:
-            last_position = Choice.objects.last().position
-        self.position = last_position + 1
-        super().save(*args, **kwargs)  
+
+
+
+
+
+ 
+
+
+
+
 
 class Service(models.Model):
     product = models.ForeignKey(Product,on_delete=models.SET_NULL,null=True)
     question = models.ForeignKey(Question,on_delete=models.SET_NULL,null=True)
-    choices = models.ManyToManyField(Choice)
+    #choices = models.ManyToManyField(Choice)
 
     def __str__(self):
         return "{}".format(self.product)

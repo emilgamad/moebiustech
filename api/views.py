@@ -1,46 +1,45 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from app.models import Product, Question, Choice, Searche, Service
+from app.models import Product, Question as testq, Choice, Searche, Service
 from users.models import Contractor, Client
 from .serializers import ProductSerializer, QuestionSerializer, ChoiceSerializer, \
     SearcheSerializer, ClientSerializer, ContractorSerializer, ServiceSerializer
-from rest_framework import viewsets, generics
+from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet
 from rest_framework.response import Response
 
 
-class Product(viewsets.ModelViewSet):
+class Product(ReadOnlyModelViewSet):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
 
-class Question(viewsets.ModelViewSet):
-    queryset = Question.objects.all()
+class Question(ReadOnlyModelViewSet):
+    queryset = testq.objects.all()
     serializer_class = QuestionSerializer
-    filterset_fields = ['product']
 
-class Choice(viewsets.ModelViewSet):
+class Choice(ReadOnlyModelViewSet):
     queryset = Choice.objects.all()
     serializer_class = ChoiceSerializer
-    filterset_fields = ['question']
 
-class Service(viewsets.ModelViewSet):
-    queryset = Service.objects.all()
-    serializer_class = ServiceSerializer
-
+class Service(ReadOnlyModelViewSet):
+    pass
+    #queryset = Question.objects.all()
+    #queryset = Service.objects.all()
+    #serializer_class = ServiceSerializer
 
 #Check POST create search record
 #Create Matches
 #Return Match 
-class Searche(viewsets.ModelViewSet):
-    queryset = Searche.objects.all()
-    serializer_class = SearcheSerializer
+# class Searche(viewsets.ModelViewSet):
+#     queryset = Searche.objects.all()
+#     serializer_class = SearcheSerializer
 
-#Data Entry
-class Contractor(viewsets.ModelViewSet):
-    queryset = Contractor.objects.all()
-    serializer_class = ContractorSerializer
+# #Data Entry
+# class Contractor(viewsets.ModelViewSet):
+#     queryset = Contractor.objects.all()
+#     serializer_class = ContractorSerializer
 
-class Client(viewsets.ModelViewSet):
-    queryset = Client.objects.all()
-    serializer_class = ClientSerializer
+# class Client(viewsets.ModelViewSet):
+#     queryset = Client.objects.all()
+#     serializer_class = ClientSerializer
 
 
     

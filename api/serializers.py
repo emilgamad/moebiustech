@@ -17,9 +17,17 @@ class ProductSerializer(serializers.ModelSerializer):
             'is_active',
             ]
 
+class ChoiceSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Choice
+        fields = [
+            'id',
+            'label',
+            'value'
+            ]
 
 class QuestionSerializer(serializers.ModelSerializer):
-    #product = serializers.CharField(source='product.service_label')
+    choices = ChoiceSerializer(many=True)
     class Meta:
         model = Question
         fields = [
@@ -31,26 +39,16 @@ class QuestionSerializer(serializers.ModelSerializer):
             'question_slug',
             'is_required',
             'is_multiple',
-            ]
-
-
-class ChoiceSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Choice
-        fields = [
-            'id',
-            'label',
-            'value'
-            ]
-
-class ServiceSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Service
-        fields = [
-            'product',
-            'question',
             'choices'
             ]
+
+
+
+class ServiceSerializer(serializers.Serializer):
+    product = ProductSerializer(many=True)
+    question = QuestionSerializer(many=True)
+    choices = ChoiceSerializer(many=True)
+    
 
 class SearcheSerializer(serializers.ModelSerializer):
     class Meta:
