@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from app.models import Product, Question, Choice, Searche, Service
+from app.models import Product, Question, Choice, Searche
 from users.models import Contractor, Client
 
 
@@ -27,6 +27,7 @@ class ChoiceSerializer(serializers.ModelSerializer):
             ]
 
 class QuestionSerializer(serializers.ModelSerializer):
+    #product = ProductSerializer() 
     choices = ChoiceSerializer(many=True)
     class Meta:
         model = Question

@@ -5,10 +5,10 @@ from rest_framework import routers
 
 
 router = routers.DefaultRouter(trailing_slash=False)
-router.register('products', views.Product)
-router.register('questions', views.Question)
-router.register('choices', views.Choice)
-#router.register('services', views.Service)
+router.register('products', views.ProductViewSet)
+router.register('questions', views.QuestionViewSet)
+router.register('choices', views.ChoiceViewSet)
+#router.register('services', views.ServiceViewSet)
 #router.register('searches', views.Searche)
 #router.register('clients', views.Client)
 #router.register('contractors', views.Contractor)
