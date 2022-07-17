@@ -84,28 +84,6 @@ class Question(models.Model):
 
 
 
-
-
-
-
-
-
-
- 
-
-
-
-
-
-class Service(models.Model):
-    product = models.ForeignKey(Product,on_delete=models.SET_NULL,null=True)
-    question = models.ForeignKey(Question,on_delete=models.SET_NULL,null=True)
-    #choices = models.ManyToManyField(Choice)
-
-    def __str__(self):
-        return "{}".format(self.product)
-
-
 class Variant(models.Model):
     product = models.ForeignKey(Product, on_delete=models.SET_NULL,null=True)
     name = models.CharField(max_length=200)
