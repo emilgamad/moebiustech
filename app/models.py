@@ -79,6 +79,38 @@ class Question(models.Model):
 
 
 
+
+class Searche(models.Model):
+    location_longitude = models.FloatField(null=True)
+    location_langitude = models.FloatField(null=True)
+    #product_id = models.IntegerField()
+    #question_id = models.IntegerField()
+    product_id = models.ForeignKey(Product,on_delete=models.SET_NULL,null=True)
+    answer = models.JSONField(null=True) 
+    phone_number = models.CharField(max_length=200,null=True, blank=True)
+    contact_person = models.CharField(max_length=200,null=True, blank=True)
+    address = models.CharField(max_length=500,null=True, blank=True)
+
+    
+
+    #------------#
+    zip_code = models.CharField(max_length=200,null=True)
+    #product = models.ForeignKey(Product,on_delete=models.SET_NULL,null=True)
+    # question = models.ManyToManyField(Question)
+    # choice = models.ManyToManyField(Choice)
+    # first_name = models.CharField(max_length=200)
+    # last_name = models.CharField(max_length=200)
+    # email = models.EmailField(max_length=200)
+    # number = models.CharField(max_length=200)
+    # project_location = models.CharField(max_length=200)
+    create_date = models.DateTimeField(auto_now_add=True)
+
+    # def __str__(self):
+    #     return "{} - {}".format(self.client, self.service)
+
+# class SearchQuestionChoices(models.Model):
+#     searche = 
+
 class Variant(models.Model):
     product = models.ForeignKey(Product, on_delete=models.SET_NULL,null=True)
     name = models.CharField(max_length=200)
@@ -109,26 +141,12 @@ class Details(models.Model):
 class Images(models.Model):
     product = models.ForeignKey(Product, on_delete=models.SET_NULL,null=True)
     #images - raw file vs set with aws, possible django storages
-
 class Reviews(models.Model):
     product = models.ForeignKey(Product, on_delete=models.SET_NULL,null=True)
     comment = models.TextField()
     rating = models.IntegerField(default=0)
 
-class Searche(models.Model):
-    zip_code = models.CharField(max_length=200)
-    product = models.ForeignKey(Product,on_delete=models.SET_NULL,null=True)
-    question = models.ManyToManyField(Question)
-    choice = models.ManyToManyField(Choice)
-    first_name = models.CharField(max_length=200)
-    last_name = models.CharField(max_length=200)
-    email = models.EmailField(max_length=200)
-    number = models.CharField(max_length=200)
-    project_location = models.CharField(max_length=200)
-    create_date = models.DateTimeField(auto_now_add=True)
 
-    def __str__(self):
-        return "{} - {}".format(self.client, self.service)
 
 
 

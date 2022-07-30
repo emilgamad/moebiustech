@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from app.models import Product, Question, Choice, Searche
-from .serializers import ProductSerializer, QuestionSerializer, ChoiceSerializer
-from rest_framework.viewsets import ReadOnlyModelViewSet
+from .serializers import ProductSerializer, QuestionSerializer, ChoiceSerializer, SearcheSerializer
+from rest_framework.viewsets import ReadOnlyModelViewSet, ModelViewSet
 from rest_framework.views import APIView
 from rest_framework.response import Response
 
@@ -19,14 +19,10 @@ class QuestionViewSet(ReadOnlyModelViewSet):
 class ChoiceViewSet(ReadOnlyModelViewSet):
     queryset = Choice.objects.all()
     serializer_class = ChoiceSerializer
-
-
-#Check POST create search record
-#Create Matches
-#Return Match 
-# class Searche(viewsets.ModelViewSet):
-#     queryset = Searche.objects.all()
-#     serializer_class = SearcheSerializer
+ 
+class Searche(ModelViewSet):
+    queryset = Searche.objects.all()
+    serializer_class = SearcheSerializer
 
 # #Data Entry
 # class Contractor(viewsets.ModelViewSet):

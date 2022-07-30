@@ -26,8 +26,7 @@ class ChoiceSerializer(serializers.ModelSerializer):
             'value'
             ]
 
-class QuestionSerializer(serializers.ModelSerializer):
-    #product = ProductSerializer() 
+class QuestionSerializer(serializers.ModelSerializer): 
     choices = ChoiceSerializer(many=True)
     class Meta:
         model = Question
@@ -43,27 +42,20 @@ class QuestionSerializer(serializers.ModelSerializer):
             'choices'
             ]
 
-
-
-class ServiceSerializer(serializers.Serializer):
-    product = ProductSerializer(many=True)
-    question = QuestionSerializer(many=True)
-    choices = ChoiceSerializer(many=True)
     
 
 class SearcheSerializer(serializers.ModelSerializer):
     class Meta:
         model = Searche
         fields = [
-            'zip_code',
-            'product',
-            'question',
-            'choice',
-            'first_name',
-            'last_name',
-            'email',
-            'number',
-            'project_location'
+            'location_longitude',
+            'location_langitude',
+            'product_id',
+            'answer',
+            'phone_number',
+            'contact_person',
+            'address'
+           
             ]
 
 class ClientSerializer(serializers.ModelSerializer):
