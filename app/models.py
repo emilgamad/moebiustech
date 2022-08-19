@@ -6,7 +6,7 @@ from django.template.defaultfilters import slugify
 
 class Product(models.Model):
     position = models.IntegerField(default=0)
-    service_slug = models.SlugField(max_length=200)
+    service_slug = models.SlugField(max_length=200, blank=True)
     service_label = models.CharField(max_length=200)
     is_active = models.BooleanField(default=False)
     #--------------------------#
@@ -30,7 +30,7 @@ class Product(models.Model):
 
 class Choice(models.Model):
     position = models.IntegerField(default=0)
-    value = models.CharField(max_length=200)
+    value = models.CharField(max_length=200, blank=True)
     label = models.CharField(max_length=200)
     create_date = models.DateTimeField(auto_now_add=True)
     is_active = models.BooleanField(default=False)
@@ -44,6 +44,7 @@ class Choice(models.Model):
         else:
             last_position = Choice.objects.last().position
         self.position = last_position + 1
+        self.value = slugify(self.label)
         super().save(*args, **kwargs)  
 
 
@@ -57,7 +58,7 @@ class Question(models.Model):
     position = models.IntegerField(default=0)
     question_type = models.CharField(max_length=20, choices=QUESTION_TYPE)
     question_label = models.CharField(max_length=200)
-    question_slug = models.SlugField(max_length=200)
+    question_slug = models.SlugField(max_length=200, blank=True)
     is_required = models.BooleanField(default=False)
     is_multiple= models.BooleanField(default=False)
     product = models.ForeignKey(Product,on_delete=models.SET_NULL,null=True)
