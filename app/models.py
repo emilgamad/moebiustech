@@ -9,14 +9,15 @@ class Product(models.Model):
     service_slug = models.SlugField(max_length=200, blank=True)
     service_label = models.CharField(max_length=200)
     is_active = models.BooleanField(default=False)
-    #--------------------------#
+    # --------------------------#
     create_date = models.DateTimeField(auto_now_add=True)
-    price = models.DecimalField(max_digits=6, decimal_places=2, default=0) #conversion of different currencies?
+    price = models.DecimalField(
+        max_digits=6, decimal_places=2, default=0
+    )  # conversion of different currencies?
     price_with_vat = models.DecimalField(max_digits=6, decimal_places=2, default=0)
-    
-    
+
     def __str__(self):
-        return f'{self.service_label} - {self.id}'
+        return f"{self.service_label} - {self.id}"
 
     def save(self, *args, **kwargs):
         if Product.objects.last() is None:
@@ -45,58 +46,52 @@ class Choice(models.Model):
             last_position = Choice.objects.last().position
         self.position = last_position + 1
         self.value = slugify(self.label)
-        super().save(*args, **kwargs)  
+        super().save(*args, **kwargs)
 
 
 class Question(models.Model):
     QUESTION_TYPE = [
-        ("RadioQuestion","Radio Question"),
+        ("RadioQuestion", "Radio Question"),
         ("CheckboxQuestion", "Checkbox Question"),
-        ("DropdownQuestion", "Dropdown Question")
-
+        ("DropdownQuestion", "Dropdown Question"),
     ]
     position = models.IntegerField(default=0)
     question_type = models.CharField(max_length=20, choices=QUESTION_TYPE)
     question_label = models.CharField(max_length=200)
     question_slug = models.SlugField(max_length=200, blank=True)
     is_required = models.BooleanField(default=False)
-    is_multiple= models.BooleanField(default=False)
-    product = models.ForeignKey(Product,on_delete=models.SET_NULL,null=True)
-    choices = models.ManyToManyField(Choice,blank=True)
-    #--------------------------#
+    is_multiple = models.BooleanField(default=False)
+    product = models.ForeignKey(Product, on_delete=models.SET_NULL, null=True)
+    choices = models.ManyToManyField(Choice, blank=True)
+    # --------------------------#
     create_date = models.DateTimeField(auto_now_add=True)
     is_active = models.BooleanField(default=False)
-    
 
     class Meta:
-        ordering = ['product']
+        ordering = ["product"]
 
     def __str__(self):
         return "{} - {}".format(self.product, self.question_label)
 
     def save(self, *args, **kwargs):
         self.question_slug = slugify(self.question_label)
-        super().save(*args, **kwargs) 
-
-
+        super().save(*args, **kwargs)
 
 
 class Searche(models.Model):
     location_longitude = models.FloatField(null=True)
     location_langitude = models.FloatField(null=True)
-    #product_id = models.IntegerField()
-    #question_id = models.IntegerField()
-    product_id = models.ForeignKey(Product,on_delete=models.SET_NULL,null=True)
-    answer = models.JSONField(null=True) 
-    phone_number = models.CharField(max_length=200,null=True, blank=True)
-    contact_person = models.CharField(max_length=200,null=True, blank=True)
-    address = models.CharField(max_length=500,null=True, blank=True)
+    # product_id = models.IntegerField()
+    # question_id = models.IntegerField()
+    product_id = models.ForeignKey(Product, on_delete=models.SET_NULL, null=True)
+    answer = models.JSONField(null=True)
+    phone_number = models.CharField(max_length=200, null=True, blank=True)
+    contact_person = models.CharField(max_length=200, null=True, blank=True)
+    address = models.CharField(max_length=500, null=True, blank=True)
 
-    
-
-    #------------#
-    zip_code = models.CharField(max_length=200,null=True)
-    #product = models.ForeignKey(Product,on_delete=models.SET_NULL,null=True)
+    # ------------#
+    zip_code = models.CharField(max_length=200, null=True)
+    # product = models.ForeignKey(Product,on_delete=models.SET_NULL,null=True)
     # question = models.ManyToManyField(Question)
     # choice = models.ManyToManyField(Choice)
     # first_name = models.CharField(max_length=200)
@@ -109,45 +104,52 @@ class Searche(models.Model):
     # def __str__(self):
     #     return "{} - {}".format(self.client, self.service)
 
+
 # class SearchQuestionChoices(models.Model):
-#     searche = 
+#     searche =
+
 
 class Variant(models.Model):
-    product = models.ForeignKey(Product, on_delete=models.SET_NULL,null=True)
+    product = models.ForeignKey(Product, on_delete=models.SET_NULL, null=True)
     name = models.CharField(max_length=200)
     value = models.CharField(max_length=200)
     unit = models.CharField(max_length=200)
     quantity = models.IntegerField(default=0)
-    price = models.DecimalField(max_digits=6, decimal_places=2, default=0) #conversion of different currencies?
+    price = models.DecimalField(
+        max_digits=6, decimal_places=2, default=0
+    )  # conversion of different currencies?
     price_with_vat = models.DecimalField(max_digits=6, decimal_places=2, default=0)
 
+
 class Details(models.Model):
-    product = models.ForeignKey(Product, on_delete=models.SET_NULL,null=True)
+    product = models.ForeignKey(Product, on_delete=models.SET_NULL, null=True)
     in_stock_online = models.BooleanField(default=True)
     in_stock_physical = models.BooleanField(default=True)
     brief_description = models.TextField()
     original_description = models.TextField()
     technical_description = models.TextField()
     delivery_time = models.DateField()
-    shipping_cost = models.DecimalField(max_digits=6, decimal_places=2, default=0) #conversion of different currencies?
+    shipping_cost = models.DecimalField(
+        max_digits=6, decimal_places=2, default=0
+    )  # conversion of different currencies?
+
     class Delivery(models.TextChoices):
-        POSTAL_DELIVERY = 'PO', _('Postal Delivery')
-        COLLECTION_AT_STORE = 'CAS', _('Collection at Store')
-        ASSOCIATED_DISTRIBUTION_POINT = 'ADP', _('Assosciated Distribution Point')
+        POSTAL_DELIVERY = "PO", _("Postal Delivery")
+        COLLECTION_AT_STORE = "CAS", _("Collection at Store")
+        ASSOCIATED_DISTRIBUTION_POINT = "ADP", _("Assosciated Distribution Point")
+
     return_information = models.TextField()
     contact_infomation = models.TextField()
     help_information = models.TextField()
     product_warranty = models.TextField()
 
+
 class Images(models.Model):
-    product = models.ForeignKey(Product, on_delete=models.SET_NULL,null=True)
-    #images - raw file vs set with aws, possible django storages
+    product = models.ForeignKey(Product, on_delete=models.SET_NULL, null=True)
+    # images - raw file vs set with aws, possible django storages
+
+
 class Reviews(models.Model):
-    product = models.ForeignKey(Product, on_delete=models.SET_NULL,null=True)
+    product = models.ForeignKey(Product, on_delete=models.SET_NULL, null=True)
     comment = models.TextField()
     rating = models.IntegerField(default=0)
-
-
-
-
-
