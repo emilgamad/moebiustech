@@ -60,6 +60,7 @@ class ContractorSerializer(serializers.ModelSerializer):
     class Meta:
         model = Contractor
         fields = [
+            "id",
             "company_name",
             "company_person",
             "field",
