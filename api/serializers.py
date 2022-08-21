@@ -54,25 +54,18 @@ class SearcheSerializer(serializers.ModelSerializer):
         ]
 
 
-class ClientSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Client
-        fields = [
-            "first_name",
-            "last_name",
-            "email",
-            "number",
-            "verified",
-        ]
-
-
 class ContractorSerializer(serializers.ModelSerializer):
+    experties = ChoiceSerializer(many=True)
+
     class Meta:
         model = Contractor
         fields = [
-            "logo",
-            "name",
-            "zip_code",
-            "product",
-            "pub_date",
+            "company_name",
+            "company_person",
+            "field",
+            "phone_number",
+            "address",
+            "email",
+            "about",
+            "experties",
         ]

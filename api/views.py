@@ -6,6 +6,7 @@ from .serializers import (
     QuestionSerializer,
     ChoiceSerializer,
     SearcheSerializer,
+    ContractorSerializer,
 )
 from rest_framework.viewsets import ReadOnlyModelViewSet, ModelViewSet
 from rest_framework.views import APIView
