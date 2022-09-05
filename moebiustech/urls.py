@@ -10,9 +10,9 @@ router.register("questions", views.QuestionViewSet)
 router.register("choices", views.ChoiceViewSet)
 router.register("searches", views.SearcheViewSet)
 router.register("contractors", views.ContractorViewSet)
+router.register("results", views.ResultViewSet)
 # router.register('clients', views.Client)
 # router.register('contractors', views.Contractor)
-# router.register('productdetails', views.ProductDetails)
 
 urlpatterns = [
     # path('app/', include('app.urls')),

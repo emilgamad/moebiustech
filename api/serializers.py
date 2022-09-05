@@ -1,7 +1,6 @@
 from rest_framework import serializers
 
-from app.models import Product, Question, Choice, Searche
-from users.models import Contractor, Client
+from app.models import Product, Question, Choice, Searche, Result, Contractor
 
 
 class ProductSerializer(serializers.ModelSerializer):
@@ -46,7 +45,7 @@ class SearcheSerializer(serializers.ModelSerializer):
         fields = [
             "location_longitude",
             "location_langitude",
-            "product_id",
+            "product",
             "answer",
             "phone_number",
             "contact_person",
@@ -70,3 +69,11 @@ class ContractorSerializer(serializers.ModelSerializer):
             "about",
             "experties",
         ]
+
+
+class ResultSerializer(serializers.ModelSerializer):
+    # nearby_contractors = ContractorSerializer(many=True)
+    # oor_contractors = ContractorSerializer(many=True)
+    class Meta:
+        model = Result
+        fields = ["id", "searhe", "nearby_contractors", "oor_contractors"]

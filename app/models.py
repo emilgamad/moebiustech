@@ -2,6 +2,10 @@ from django.db import models
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 from django.template.defaultfilters import slugify
+from geopy import distance
+from geopy.geocoders import Nominatim
+
+locator = Nominatim(user_agent="myGeocoder")
 
 
 class Product(models.Model):
@@ -81,32 +85,80 @@ class Question(models.Model):
 class Searche(models.Model):
     location_longitude = models.FloatField(null=True)
     location_langitude = models.FloatField(null=True)
-    # product_id = models.IntegerField()
-    # question_id = models.IntegerField()
-    product_id = models.ForeignKey(Product, on_delete=models.SET_NULL, null=True)
+    product = models.ForeignKey(Product, on_delete=models.SET_NULL, null=True)
     answer = models.JSONField(null=True)
     phone_number = models.CharField(max_length=200, null=True, blank=True)
     contact_person = models.CharField(max_length=200, null=True, blank=True)
     address = models.CharField(max_length=500, null=True, blank=True)
-
+    # question = models.ForeignKey(Question, on_delete=models.SET_NULL, null=True)
+    # choice = models.ForeignKey(Choice, on_delete=models.SET_NULL, null=True)
     # ------------#
-    zip_code = models.CharField(max_length=200, null=True)
-    # product = models.ForeignKey(Product,on_delete=models.SET_NULL,null=True)
-    # question = models.ManyToManyField(Question)
-    # choice = models.ManyToManyField(Choice)
-    # first_name = models.CharField(max_length=200)
-    # last_name = models.CharField(max_length=200)
-    # email = models.EmailField(max_length=200)
-    # number = models.CharField(max_length=200)
-    # project_location = models.CharField(max_length=200)
+    zip_code = models.CharField(max_length=200, null=True, blank=True)
     create_date = models.DateTimeField(auto_now_add=True)
 
-    # def __str__(self):
-    #     return "{} - {}".format(self.client, self.service)
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        if self.answer:
+            question_id = self.answer[0]["question_id"]
+            choices_id = self.answer[0]["choices"][0]
+            question = Question.objects.get(id=question_id)
+            choice = Choice.objects.get(id=choices_id)
+            product = Product.objects.get(id=question.product.id)
+
+            nearby_contractors = Contractor.objects.filter(
+                product__id=product.id, experties__id=choice.id
+            )
+            search_result = Result(searche=self)
+            search_result.save()
+            for each in nearby_contractors:
+                search_result.nearby_contractors.add(each)
+
+    def __str__(self):
+        if self.answer:
+            question_id = self.answer[0]["question_id"]
+            choices_id = self.answer[0]["choices"][0]
+            question = Question.objects.get(id=question_id)
+            choice = Choice.objects.get(id=choices_id)
+
+        return "{} - {}".format(question, choice)
 
 
-# class SearchQuestionChoices(models.Model):
-#     searche =
+class Contractor(models.Model):
+    product = models.ManyToManyField(Product)
+    experties = models.ManyToManyField(Choice)
+    company_name = models.CharField(max_length=200, blank=True)
+    company_person = models.CharField(max_length=200, blank=True)
+    field = models.CharField(max_length=200, blank=True)
+    phone_number = models.CharField(max_length=200, blank=True)
+    address = models.CharField(max_length=500, blank=True)
+    zip_code = models.CharField(max_length=200, blank=True)
+    email = models.EmailField(blank=True)
+    about = models.CharField(max_length=500, blank=True)
+    logo = models.ImageField(blank=True)
+    website = models.CharField(max_length=200, blank=True)
+    pub_date = models.DateTimeField(auto_now_add=True, blank=True)
+    internal_notes = models.TextField(blank=True)
+    notes = models.TextField(blank=True)
+    service_area = models.CharField(max_length=200, blank=True)
+    location_longitude = models.FloatField(null=True, blank=True)
+    location_langitude = models.FloatField(null=True, blank=True)
+
+    def __str__(self):
+        if self.company_name:
+            return "{}".format(self.company_name)
+        else:
+            return "{}".format(self.company_person)
+
+
+class Result(models.Model):
+    searche = models.ForeignKey(Searche, on_delete=models.SET_NULL, null=True)
+    nearby_contractors = models.ManyToManyField(
+        Contractor, related_name="nearby_contractors"
+    )
+    oor_contractors = models.ManyToManyField(Contractor, related_name="oor_contractors")
+
+    def __str__(self):
+        return "{}".format(self.searche)
 
 
 class Variant(models.Model):

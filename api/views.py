@@ -1,12 +1,12 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from app.models import Product, Question, Choice, Searche
-from users.models import Contractor
+from app.models import Product, Question, Choice, Searche, Result, Contractor
 from .serializers import (
     ProductSerializer,
     QuestionSerializer,
     ChoiceSerializer,
     SearcheSerializer,
     ContractorSerializer,
+    ResultSerializer,
 )
 from rest_framework.viewsets import ReadOnlyModelViewSet, ModelViewSet
 from rest_framework.views import APIView
@@ -37,6 +37,12 @@ class SearcheViewSet(ModelViewSet):
 class ContractorViewSet(ReadOnlyModelViewSet):
     queryset = Contractor.objects.all()
     serializer_class = ContractorSerializer
+
+
+class ResultViewSet(ReadOnlyModelViewSet):
+    queryset = Result.objects.all()
+    serializer_class = ResultSerializer
+    filterset_fields = ["searche"]
 
 
 # #Data Entry
