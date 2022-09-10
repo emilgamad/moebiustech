@@ -50,6 +50,7 @@ class SearcheSerializer(serializers.ModelSerializer):
             "phone_number",
             "contact_person",
             "address",
+            "result",
         ]
 
 
@@ -72,8 +73,9 @@ class ContractorSerializer(serializers.ModelSerializer):
 
 
 class ResultSerializer(serializers.ModelSerializer):
+    # searche = serializers.SerializerMetodField('')
     # nearby_contractors = ContractorSerializer(many=True)
     # oor_contractors = ContractorSerializer(many=True)
     class Meta:
         model = Result
-        fields = ["id", "searhe", "nearby_contractors", "oor_contractors"]
+        fields = ["id", "nearby_contractors", "oor_contractors"]

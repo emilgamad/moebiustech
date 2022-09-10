@@ -82,47 +82,6 @@ class Question(models.Model):
         super().save(*args, **kwargs)
 
 
-class Searche(models.Model):
-    location_longitude = models.FloatField(null=True)
-    location_langitude = models.FloatField(null=True)
-    product = models.ForeignKey(Product, on_delete=models.SET_NULL, null=True)
-    answer = models.JSONField(null=True)
-    phone_number = models.CharField(max_length=200, null=True, blank=True)
-    contact_person = models.CharField(max_length=200, null=True, blank=True)
-    address = models.CharField(max_length=500, null=True, blank=True)
-    # question = models.ForeignKey(Question, on_delete=models.SET_NULL, null=True)
-    # choice = models.ForeignKey(Choice, on_delete=models.SET_NULL, null=True)
-    # ------------#
-    zip_code = models.CharField(max_length=200, null=True, blank=True)
-    create_date = models.DateTimeField(auto_now_add=True)
-
-    def save(self, *args, **kwargs):
-        super().save(*args, **kwargs)
-        if self.answer:
-            question_id = self.answer[0]["question_id"]
-            choices_id = self.answer[0]["choices"][0]
-            question = Question.objects.get(id=question_id)
-            choice = Choice.objects.get(id=choices_id)
-            product = Product.objects.get(id=question.product.id)
-
-            nearby_contractors = Contractor.objects.filter(
-                product__id=product.id, experties__id=choice.id
-            )
-            search_result = Result(searche=self)
-            search_result.save()
-            for each in nearby_contractors:
-                search_result.nearby_contractors.add(each)
-
-    def __str__(self):
-        if self.answer:
-            question_id = self.answer[0]["question_id"]
-            choices_id = self.answer[0]["choices"][0]
-            question = Question.objects.get(id=question_id)
-            choice = Choice.objects.get(id=choices_id)
-
-        return "{} - {}".format(question, choice)
-
-
 class Contractor(models.Model):
     product = models.ManyToManyField(Product)
     experties = models.ManyToManyField(Choice)
@@ -151,14 +110,73 @@ class Contractor(models.Model):
 
 
 class Result(models.Model):
-    searche = models.ForeignKey(Searche, on_delete=models.SET_NULL, null=True)
     nearby_contractors = models.ManyToManyField(
         Contractor, related_name="nearby_contractors"
     )
     oor_contractors = models.ManyToManyField(Contractor, related_name="oor_contractors")
 
+
+class Searche(models.Model):
+    location_longitude = models.FloatField()
+    location_langitude = models.FloatField()
+    product = models.ForeignKey(Product, on_delete=models.SET_NULL, null=True)
+    answer = models.JSONField(null=True)
+    phone_number = models.CharField(max_length=200, null=True, blank=True)
+    contact_person = models.CharField(max_length=200, null=True, blank=True)
+    address = models.CharField(max_length=500, null=True, blank=True)
+    result = models.ForeignKey(Result, on_delete=models.SET_NULL, null=True)
+    # ------------#
+    project_location = models.CharField(max_length=200, null=True, blank=True)
+    create_date = models.DateTimeField(auto_now_add=True)
+
+    def save(self, *args, **kwargs):
+
+        self.project_location = locator.reverse(
+            f"{self.location_longitude},{self.location_langitude}"
+        ).address
+        if self.answer:
+            # parse input
+            question_id = self.answer[0]["question_id"]
+            choices_id = self.answer[0]["choices"][0]
+            question = Question.objects.get(id=question_id)
+            choice = Choice.objects.get(id=choices_id)
+            product = Product.objects.get(id=question.product.id)
+
+            search_result = Result()
+            search_result.save()
+
+            # filter nearby contractors
+            nearby_contractors = Contractor.objects.filter(
+                product__id=product.id,
+                experties__id=choice.id,
+                service_area__in=self.project_location.split(", "),
+            )
+
+            # filter oor contractors
+            matched_contractors = list(
+                Contractor.objects.filter(
+                    product__id=product.id, experties__id=choice.id
+                )
+            )
+
+            for each in nearby_contractors:
+                search_result.nearby_contractors.add(each)
+                matched_contractors.remove(each)
+
+            for each in matched_contractors:
+                search_result.oor_contractors.add(each)
+
+            self.result = search_result
+        super().save(*args, **kwargs)
+
     def __str__(self):
-        return "{}".format(self.searche)
+        if self.answer:
+            question_id = self.answer[0]["question_id"]
+            choices_id = self.answer[0]["choices"][0]
+            question = Question.objects.get(id=question_id)
+            choice = Choice.objects.get(id=choices_id)
+
+        return "{} - {}".format(question, choice)
 
 
 class Variant(models.Model):
