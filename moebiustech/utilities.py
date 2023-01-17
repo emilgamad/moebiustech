@@ -103,7 +103,10 @@ def get_registration_period_validity(soup):
     soup_reg = soup.find(text=re.compile("Validity Period of this Registration: (.*)"))
     if soup_reg:
         if "Registration date:" in soup_reg:
-            registration_period_validity = soup_reg.split("\r\n\t")[3]
+            try:
+                registration_period_validity = soup_reg.split("\r\n\t")[3]
+            except:
+                registration_period_validity = soup_reg.next.strip()
         else:
             registration_period_validity = soup_reg.next.strip()
     return registration_period_validity
@@ -192,7 +195,7 @@ def get_PCAB_Data(start, stop, file_name):
             registration_date = get_registration_date(soup)
             # print(registration_date)
             registration_number = get_registration_number(soup)
-            # print('reg_num', registration_number)
+            # print(registration_number)
             registration_period_validity = get_registration_period_validity(soup)
             # print(registration_period_validity)
             projects_kind_and_size_range = get_project_kind_and_size_range(soup)
@@ -200,22 +203,22 @@ def get_PCAB_Data(start, stop, file_name):
 
             headers = [
                 each,
-                contractor_name.strip(),
-                authorized_managing_officer.strip(),
-                contractor_type.strip(),
-                head_office.strip(),
-                license_first_issue_date.strip(),
-                license_number.strip(),
-                license_renewal_validity.strip(),
-                principal_classification.strip(),
-                category.strip(),
+                contractor_name,
+                authorized_managing_officer,
+                contractor_type,
+                head_office,
+                license_first_issue_date,
+                license_number,
+                license_renewal_validity,
+                principal_classification,
+                category,
                 other_classifications,
-                registration_date.strip(),
-                registration_number.strip(),
-                registration_period_validity.strip(),
+                registration_date,
+                registration_number,
+                registration_period_validity,
                 projects_kind_and_size_range,
             ]
-            print(headers)
+            # print(headers)
             file = open(file_name, "a", newline="", encoding="utf-8")
             writer = csv.writer(file)
             writer.writerow(headers)
@@ -223,6 +226,6 @@ def get_PCAB_Data(start, stop, file_name):
 
         except Exception as e:
             print(str(e))
-            pass
+            break
 
     return
