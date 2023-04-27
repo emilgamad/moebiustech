@@ -133,7 +133,8 @@ class Searche(models.Model):
     def save(self, *args, **kwargs):
 
         self.project_location = locator.reverse(
-            f"{self.location_longitude},{self.location_langitude}"
+            f"{self.location_longitude},{self.location_langitude}",
+            zoom=18
         ).address
         if self.answer:
             # parse input
