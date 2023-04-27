@@ -4,6 +4,7 @@ from django.utils.translation import gettext_lazy as _
 from django.template.defaultfilters import slugify
 from geopy import distance
 from geopy.geocoders import Nominatim
+import logging
 
 locator = Nominatim(user_agent="myGeocoder")
 
@@ -150,13 +151,14 @@ class Searche(models.Model):
                 product__id=product.id,
                 experties__id=choice.id,
                 service_area__in=self.project_location.split(", "),
-            )
+            )[:5]
 
             # filter oor contractors
             matched_contractors = list(
                 Contractor.objects.filter(
-                    product__id=product.id, experties__id=choice.id
-                )
+                    product__id=product.id, 
+                    experties__id=choice.id,
+                )[:5]
             )
 
             for each in nearby_contractors:
