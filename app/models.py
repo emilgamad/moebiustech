@@ -164,7 +164,8 @@ class Searche(models.Model):
 
             for each in nearby_contractors:
                 search_result.nearby_contractors.add(each)
-                matched_contractors.remove(each)
+                if each in matched_contractors:
+                    matched_contractors.remove(each)
 
             for each in matched_contractors:
                 search_result.oor_contractors.add(each)
