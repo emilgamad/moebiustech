@@ -27,7 +27,7 @@ SECRET_KEY = "django-insecure-yoif5z9mlbkoggu_x%rtzp9=g2h_35zdvx@^k+(phc5ouo_t))
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["localhost", "emilmoebius.pythonanywhere.com"]
+ALLOWED_HOSTS = ["localhost", "emilmoebius.pythonanywhere.com", "127.0.0.1"]
 
 
 # Application definition
@@ -131,5 +131,13 @@ STATIC_ROOT = os.path.join(BASE_DIR, "static")
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 REST_FRAMEWORK = {
-    "DEFAULT_FILTER_BACKENDS": ["django_filters.rest_framework.DjangoFilterBackend"]
+    "DEFAULT_FILTER_BACKENDS": ["django_filters.rest_framework.DjangoFilterBackend"],
+    'DEFAULT_THROTTLE_CLASSES': [
+        'rest_framework.throttling.AnonRateThrottle',
+        'rest_framework.throttling.UserRateThrottle'
+    ],
+    'DEFAULT_THROTTLE_RATES': {
+        'anon': '1/second',
+        'user': '1000/day'
+    }
 }

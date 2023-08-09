@@ -11,7 +11,7 @@ from .serializers import (
 from rest_framework.viewsets import ReadOnlyModelViewSet, ModelViewSet
 from rest_framework.views import APIView
 from rest_framework.response import Response
-
+from rest_framework.throttling import UserRateThrottle
 
 class ProductViewSet(ReadOnlyModelViewSet):
     queryset = Product.objects.all()
@@ -30,6 +30,7 @@ class ChoiceViewSet(ReadOnlyModelViewSet):
 
 
 class SearcheViewSet(ModelViewSet):
+    throttle_classes = [UserRateThrottle]
     queryset = Searche.objects.all()
     serializer_class = SearcheSerializer
 
