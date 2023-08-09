@@ -3,10 +3,12 @@ from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 from django.template.defaultfilters import slugify
 from geopy import distance
-from geopy.geocoders import Nominatim
+from utilities.reverse_geocoding import get_location_from_coordinates
+from moebiustech.settings import REVERSE_GEOCODING_KEY
 import logging
+import json
 
-locator = Nominatim(user_agent="myGeocoder")
+# locator = Nominatim(user_agent="myGeocoder")
 
 
 class Product(models.Model):
@@ -132,10 +134,15 @@ class Searche(models.Model):
 
     def save(self, *args, **kwargs):
 
-        self.project_location = locator.reverse(
-            f"{self.location_longitude},{self.location_langitude}",
-            zoom=18
-        ).address
+        # self.project_location = locator.reverse(
+        #     f"{self.location_longitude},{self.location_langitude}",
+        #     zoom=18
+        # ).address
+        self.project_location = get_location_from_coordinates(
+            self.location_longitude, 
+            self.location_langitude,
+            REVERSE_GEOCODING_KEY
+        )
         if self.answer:
             # parse input
             question_id = self.answer[0]["question_id"]
