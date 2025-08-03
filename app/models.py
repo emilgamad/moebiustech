@@ -10,6 +10,9 @@ locator = Nominatim(user_agent="myGeocoder")
 
 
 class Product(models.Model):
+    """
+    Model representing a product or service.
+    """
     position = models.IntegerField(default=0)
     service_slug = models.SlugField(max_length=200, blank=True)
     service_label = models.CharField(max_length=200)
@@ -22,9 +25,15 @@ class Product(models.Model):
     price_with_vat = models.DecimalField(max_digits=6, decimal_places=2, default=0)
 
     def __str__(self):
+        """
+        String representation of the Product.
+        """
         return f"{self.service_label} - {self.id}"
 
     def save(self, *args, **kwargs):
+        """
+        Custom save method to set position and slug.
+        """
         if Product.objects.last() is None:
             last_position = 0
         else:
@@ -35,6 +44,9 @@ class Product(models.Model):
 
 
 class Choice(models.Model):
+    """
+    Model representing a selectable choice for a question.
+    """
     position = models.IntegerField(default=0)
     value = models.CharField(max_length=200, blank=True)
     label = models.CharField(max_length=200)
@@ -42,9 +54,15 @@ class Choice(models.Model):
     is_active = models.BooleanField(default=False)
 
     def __str__(self):
+        """
+        String representation of the Choice.
+        """
         return "{}".format(self.label)
 
     def save(self, *args, **kwargs):
+        """
+        Custom save method to set position and value.
+        """
         if Choice.objects.last() is None:
             last_position = 0
         else:
@@ -55,6 +73,9 @@ class Choice(models.Model):
 
 
 class Question(models.Model):
+    """
+    Model representing a question for a product.
+    """
     QUESTION_TYPE = [
         ("RadioQuestion", "Radio Question"),
         ("CheckboxQuestion", "Checkbox Question"),
@@ -76,14 +97,23 @@ class Question(models.Model):
         ordering = ["product"]
 
     def __str__(self):
+        """
+        String representation of the Question.
+        """
         return "{} - {}".format(self.product, self.question_label)
 
     def save(self, *args, **kwargs):
+        """
+        Custom save method to set slug.
+        """
         self.question_slug = slugify(self.question_label)
         super().save(*args, **kwargs)
 
 
 class Contractor(models.Model):
+    """
+    Model representing a contractor.
+    """
     product = models.ManyToManyField(Product)
     experties = models.ManyToManyField(Choice)
     company_name = models.CharField(max_length=200, blank=True)
@@ -104,6 +134,9 @@ class Contractor(models.Model):
     location_langitude = models.FloatField(null=True, blank=True)
 
     def __str__(self):
+        """
+        String representation of the Contractor.
+        """
         if self.company_name:
             return "{}".format(self.company_name)
         else:
@@ -111,6 +144,9 @@ class Contractor(models.Model):
 
 
 class Result(models.Model):
+    """
+    Model representing the result of a contractor search.
+    """
     nearby_contractors = models.ManyToManyField(
         Contractor, related_name="nearby_contractors"
     )
@@ -118,6 +154,9 @@ class Result(models.Model):
 
 
 class Searche(models.Model):
+    """
+    Model representing a search performed by a user.
+    """
     location_longitude = models.FloatField()
     location_langitude = models.FloatField()
     product = models.ForeignKey(Product, on_delete=models.SET_NULL, null=True)
@@ -131,7 +170,9 @@ class Searche(models.Model):
     create_date = models.DateTimeField(auto_now_add=True)
 
     def save(self, *args, **kwargs):
-
+        """
+        Custom save method to set project location and filter contractors.
+        """
         self.project_location = locator.reverse(
             f"{self.location_longitude},{self.location_langitude}"
         ).address
@@ -172,6 +213,9 @@ class Searche(models.Model):
         super().save(*args, **kwargs)
 
     def __str__(self):
+        """
+        String representation of the Searche.
+        """
         if self.answer:
             question_id = self.answer[0]["question_id"]
             choices_id = self.answer[0]["choices"][0]
@@ -182,6 +226,9 @@ class Searche(models.Model):
 
 
 class Variant(models.Model):
+    """
+    Model representing a product variant.
+    """
     product = models.ForeignKey(Product, on_delete=models.SET_NULL, null=True)
     name = models.CharField(max_length=200)
     value = models.CharField(max_length=200)
@@ -194,6 +241,9 @@ class Variant(models.Model):
 
 
 class Details(models.Model):
+    """
+    Model representing product details and delivery information.
+    """
     product = models.ForeignKey(Product, on_delete=models.SET_NULL, null=True)
     in_stock_online = models.BooleanField(default=True)
     in_stock_physical = models.BooleanField(default=True)
@@ -206,6 +256,9 @@ class Details(models.Model):
     )  # conversion of different currencies?
 
     class Delivery(models.TextChoices):
+        """
+        Enum for delivery types.
+        """
         POSTAL_DELIVERY = "PO", _("Postal Delivery")
         COLLECTION_AT_STORE = "CAS", _("Collection at Store")
         ASSOCIATED_DISTRIBUTION_POINT = "ADP", _("Assosciated Distribution Point")
@@ -217,11 +270,17 @@ class Details(models.Model):
 
 
 class Images(models.Model):
+    """
+    Model representing images for a product.
+    """
     product = models.ForeignKey(Product, on_delete=models.SET_NULL, null=True)
     # images - raw file vs set with aws, possible django storages
 
 
 class Reviews(models.Model):
+    """
+    Model representing product reviews.
+    """
     product = models.ForeignKey(Product, on_delete=models.SET_NULL, null=True)
     comment = models.TextField()
     rating = models.IntegerField(default=0)

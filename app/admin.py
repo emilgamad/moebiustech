@@ -1,3 +1,8 @@
+
+"""
+Admin configuration for the app module.
+"""
+
 from django.contrib import admin
 
 from .models import Product, Question, Choice, Searche, Result, Contractor
